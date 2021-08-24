@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useContext } from 'react';
+import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
+
+
+import Feeds from "./Components/Feeds";
+import Header from "./Components/Header";
+import Login from "./Components/Login";
+import Profile from "./Components/Profile";
+import Signup from "./Components/SignUp.jsx";
+import { AuthContext, AuthProvider } from './context/AuthProvider';
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+
+      <Router>
+        <div className="App">
+          <Header></Header>
+
+
+          <Switch>
+            <Route path="/login" component={Login} exact></Route>
+            <Route path="/signup" component={Signup} exact></Route>
+            <PrivateRoute path="/" comp={Feeds}></PrivateRoute>
+            <PrivateRoute path="/profile" comp={Profile}></PrivateRoute>
+
+          </Switch>
+
+        </div>
+      </Router>
+    </AuthProvider>
   );
+}
+
+
+
+function PrivateRoute(props) {
+
+  let { comp: Component, path } = props;
+
+  let { currentUser } = useContext(AuthContext);
+
+  return currentUser ? (
+    <Route path={path} component={Component}></Route>
+  ) : (
+    <Redirect to="/login"></Redirect>
+  )
+
 }
 
 export default App;
